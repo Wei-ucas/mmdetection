@@ -353,6 +353,47 @@ class LoadAnnotations(object):
 
 
 @PIPELINES.register_module()
+class LoadAnnotationsWithText(LoadAnnotations):
+
+    def __init__(self,
+                 # with_bbox=True,
+                 # with_label=True,
+                 # with_mask=False,
+                 # with_seg=False,
+                 # poly2mask=True,
+                 # file_client_args=dict(backend='disk'),
+                 with_text=True,
+                 **kwargs):
+        super(LoadAnnotationsWithText, self).__init__(**kwargs)
+        self.with_text = with_text
+
+    def _load_text(self,result):
+        '''
+        Private function to load text labels and text masks
+        :param result:
+        :return:
+        '''
+        result['gt_texts'] = result['ann_info']['text_labels']
+        result['gt_text_masks'] = result['ann_info']['text_masks']
+        return result
+
+    def __call__(self, results):
+        if self.with_bbox:
+            results = self._load_bboxes(results)
+            if results is None:
+                return None
+        if self.with_label:
+            results = self._load_labels(results)
+        if self.with_mask:
+            results = self._load_masks(results)
+        if self.with_seg:
+            results = self._load_semantic_seg(results)
+        if self.with_text:
+            results = self._load_text(results)
+        return results
+
+
+@PIPELINES.register_module()
 class LoadProposals(object):
     """Load proposal pipeline.
 

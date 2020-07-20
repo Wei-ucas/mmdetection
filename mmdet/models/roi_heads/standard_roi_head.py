@@ -74,7 +74,8 @@ class StandardRoIHead(BaseRoIHead, BBoxTestMixin, MaskTestMixin):
                       gt_bboxes,
                       gt_labels,
                       gt_bboxes_ignore=None,
-                      gt_masks=None):
+                      gt_masks=None,
+                      **kwargs):
         """
         Args:
             x (list[Tensor]): list of multi-level img features.
@@ -125,7 +126,7 @@ class StandardRoIHead(BaseRoIHead, BBoxTestMixin, MaskTestMixin):
         if self.with_mask:
             mask_results = self._mask_forward_train(x, sampling_results,
                                                     bbox_results['bbox_feats'],
-                                                    gt_masks, img_metas)
+                                                    gt_masks, img_metas, **kwargs)
             # TODO: Support empty tensor input. #2280
             if mask_results['loss_mask'] is not None:
                 losses.update(mask_results['loss_mask'])
